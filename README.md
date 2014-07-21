@@ -22,23 +22,33 @@ If you'll be making pie charts, you also should load [d3Pie](http://d3pie.org).
 Currently, you can use Zatanna to create line charts and pie charts.
 
 ## Line Chart
-To build a line chart using D3.
+Build a line chart using D3. (Based upon Michael Bostock's [line chart example](http://bl.ocks.org/mbostock/3883245).) 
+
+Example:
 ```
 d3LineChart("#chart", typed, "Keys Typed", {xAxisIsDates: true, yTicks: 7});
 ```
-Based upon Michael Bostock's [line chart example](http://bl.ocks.org/mbostock/3883245).
 
 ### Parameters
-`function d3LineChart(targetSelector, data, yAxisLabel, options)`
+```
+function d3LineChart(targetSelector, data, yAxisLabel, options)
+```
  * targetSelector: String. The selector (#id or .class or combination) to put the SVG element in.
  * data: Array. The data array, see below for expected format.
  * yAxisLabel: String. Label for the yAxis. Optional, and can also be set to "".
  * options: hash. Optional hash of options. See below for accepted options.
 
 ### Data format
-d3LineChart expects with dates on the X axis.
+d3LineChart expects an array of hashes, with index "date" for the X axis, and "count" for the Y:w
+xis.
 ```
-var typed = [{"date":"2014-01-01","count":443},{"date":"2014-02-01","count":23},{"date":"2014-03-01","count":133},{"date":"2014-04-01","count":223},{"date":"2014-05-01","count":13}];
+var typed = [
+  {"date":"2014-01-01","count":443},
+  {"date":"2014-02-01","count":23},
+  {"date":"2014-03-01","count":133},
+  {"date":"2014-04-01","count":223},
+  {"date":"2014-05-01","count":13}
+];
 ```
 
 ### Options 
@@ -62,7 +72,9 @@ d3PieChart("#ages", ages, {title: "Age", width: 480, height: 300});
 ```
 
 ### Parameters
-`function d3PieChart(targetSelector, data, options)`
+```
+function d3PieChart(targetSelector, data, options)
+```
  * targetSelector: String. The selector (#id or .class or combination) to put the SVG element in.
  * data: Array. The data array, see below for expected format.
  * options: hash. Optional hash of options. See below for accepted options.
@@ -77,4 +89,5 @@ Will accept data in any of the following formats:
 Shown as Option Name (default value).
  * width (320)
  * height (320)
+
 Also note that you can add ANY option which d3Pie accepts, and it will be passed to the d3Pie call. (e.g.: `"size": { "pieInnerRadius": "90%"}`).
