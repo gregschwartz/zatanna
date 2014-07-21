@@ -1,6 +1,7 @@
 /**
  * Zatanna, a Javascript library, v1.0
  * @requires d3 v3.4.11 or later
+ * @requires jQuery v2.1.1 or later
  *
  * Zatanna is a Javascript library that makes it easy to build graphs with
  * D3. It also simplifies using d3Pie.

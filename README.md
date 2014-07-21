@@ -5,8 +5,9 @@ Javascript functions that make it easier to build simple graphs with D3.
 
 # Installation
 
-First, load the library (both CSS and JS), and [D3](http://d3js.org/).
+Load jQuery, [D3](http://d3js.org/), and Zatanna's CSS and JS.
 ```
+<script src="jquery-2.1.1.min.js" charset="utf-8"></script>
 <script src="zatanna.js" charset="utf-8"></script>
 <link href="zatanna.css" rel="stylesheet" type="text/css">
 <script src="d3.v3.min.js" charset="utf-8"></script>
