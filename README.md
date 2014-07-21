@@ -83,7 +83,7 @@ function d3PieChart(targetSelector, data, options)
 Will accept data in any of the following formats:
  * `{family: 213, roommates: 32, kids: 178, alone: 57 }`
  * `{'18-29': 173, '30-49': 231, '50-64': 81, '65+': 0}`
- * `{green: 10, yellow: 26, red: 33}` (You will probably want to include {"stoplight": "true"} in the options, too.)
+ * `{green: 10, yellow: 26, red: 33}` (You will probably want to include `"stoplight": "true"` in the options, too.)
 
 ### Options 
 Shown as Option Name (default value).
