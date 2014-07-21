@@ -1,17 +1,42 @@
+/**
+ * Zatanna, a Javascript library, v1.0
+ * @requires d3 v3.4.11 or later
+ *
+ * Zatanna is a Javascript library that makes it easy to build graphs with
+ * D3. It also simplifies using d3Pie.
+ *
+ * For usage and examples, visit:
+ * https://github.com/zipongo/zatanna/
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/mit-license.php
+ *
+ * Copyright (c) 2014, Greg Schwartz at Zipongo, Inc.
+ */
+
+
 /** 
  * Build a line chart using D3.
- * Example: d3LineChart("#enrolled", dataPeriod.enrollmentMonthly, "Users", {xAxisIsDates: true, yTicks: 7});
  * @param {string} targetSelector The selector (#id or .class or combination) to put the SVG element in.
  * @param {array} data The data array. See notes for accepted forms to the data.
  * @param {string} yAxisLabel Label for the yAxis. Can also be set to "".
  * @param {hash} options Hash of options. See notes for accepted options.
+ * Example: d3LineChart("#enrolled", dataPeriod.enrollmentMonthly, "Users", {xAxisIsDates: true, yTicks: 7});
+ * Based upon Michael Bostock's line chart code, http://bl.ocks.org/mbostock/3883245
  */
 function d3LineChart(targetSelector, data, yAxisLabel, options) {
   options = options || {};
+  yAxisLabel = yAxisLabel || "";
   var margin = {top: options.margin_top || 25, right: options.margin_right || 20, bottom: options.margin_bottom || 30, left: options.margin_left || 60};
   var width = (options.width || 950) - margin.left - margin.right;
   var height = (options.height || 400) - margin.top - margin.bottom;
   var yTicks = options.yTicks || 10;
+  var xGrid = (options.xGrid || true);
+  var yGrid = (options.yGrid || true);
+  var labelDataPoints = (options.labelDataPoints || true);
+
+  //later this can be allowed to be off, and the function will be able to build scatter plots. But for now, we're only supporting dates.
+  options.xAxisIsDates = true;
 
   var parseDate = d3.time.format("%Y-%m-%d").parse;
 
@@ -30,8 +55,8 @@ function d3LineChart(targetSelector, data, yAxisLabel, options) {
   var xAxis = d3.svg.axis()
       .scale(x)
       .orient("bottom");
-  if(options.xAxisIsDates) 
-      xAxis = xAxis.ticks(d3.time.month, 1);
+  if(options.xAxisTicks && options.xAxisTicks.interval && options.xAxisTicks.amount) 
+      xAxis = xAxis.ticks(options.xAxisTicks.interval, options.xAxisTicks.amount);
 
   var yAxis = d3.svg.axis()
       .scale(y)
@@ -67,25 +92,25 @@ function d3LineChart(targetSelector, data, yAxisLabel, options) {
       .style("text-anchor", "end")
       .text(yAxisLabel);
 
-  if(!options.noGridX || !options.noGridY) {
+  if(xGrid || yGrid) {
     var rules = svg.selectAll("g.rule")
       .data(x.ticks(10))
      .enter().append("svg:g")
        .attr("class", "rule");
   }
 
-  if(!options.noGridX) {
+  if(xGrid) {
    // Draw grid lines
    rules.append("svg:line")
     .attr("class", function(d) { return d ? null : "axis"; })
-    .data(options.xAxisIsDates ? x.ticks(d3.time.month, 1) : x.ticks())
+    .data(options.xAxisTicks && options.xAxisTicks.interval && options.xAxisTicks.amount ? x.ticks(options.xAxisTicks.interval, options.xAxisTicks.amount) : x.ticks())
     .attr("x1", x)
     .attr("x2", x)
     .attr("y1", 0)
     .attr("y2", height - 1);
   }
 
-  if(!options.noGridY) {
+  if(yGrid) {
    rules.append("svg:line")
     .attr("class", function(d) { return d ? null : "axis"; })
     .data(y.ticks(yTicks))
@@ -100,7 +125,7 @@ function d3LineChart(targetSelector, data, yAxisLabel, options) {
       .attr("class", "line")
       .attr("d", line);
 
-  if(!options.doNotLabelDataPoints) {
+  if(labelDataPoints) {
     //show a dot at each datapoint
     svg.selectAll(".dataLabel")
         .data(data)
@@ -122,20 +147,16 @@ function d3LineChart(targetSelector, data, yAxisLabel, options) {
   }
 } 
 
-
-
-/**
- * Data is expected in one of these three formats: 
-   {family: 213, roommates: 32, kids: 178, alone: 57 }
-   {'18-29': 173, '30-49': 231, '50-64': 81, '65+': 0}
-   {green: 10, yellow: 26, red: 33}
- */
 /** 
- * Build a line chart using D3.
- * Example: d3PieChart("#ages", dataPeriod.users.ages, {title: "Age", width: 480, height: 300});
+ * Build a pie chart using D3pie.
  * @param {string} targetSelector The selector (#id or .class or combination) to put the SVG element in.
  * @param {array} data The data array. See notes for accepted forms to the data.
  * @param {hash} options Hash of options. See notes for accepted options.
+ * Example: d3PieChart("#ages", dataPeriod.users.ages, {title: "Age", width: 480, height: 300});
+ * Data is expected in one of these three formats: 
+ * {family: 213, roommates: 32, kids: 178, alone: 57 }
+ * {'18-29': 173, '30-49': 231, '50-64': 81, '65+': 0}
+ * {green: 10, yellow: 26, red: 33} (And then you probably want to include {"stoplight": "true"} in the options.)
  */
 function d3PieChart(targetSelector, data, options) {
   options = options || {};
