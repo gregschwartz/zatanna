@@ -68,7 +68,7 @@ Shown as Option Name (default value).
 [d3Pie](http://d3pie.org) already makes it pretty easy to build a pie chart, and this function simplifies things a bit further.
 
 ```
-var ages = {'18-29': 173, '30-49': 231, '50-64': 81, '65+': 0};
+var ages = {'18-29': 173, '30-49': 231, '50-64': 81, '65+': 1};
 d3PieChart("#ages", ages, {title: "Age", width: 480, height: 300});
 ```
 
