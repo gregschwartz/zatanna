@@ -34,7 +34,8 @@ function d3LineChart(targetSelector, data, yAxisLabel, options) {
   var yTicks = options.yTicks || 10;
   var xGrid = (options.xGrid || true);
   var yGrid = (options.yGrid || true);
-  var labelDataPoints = (options.labelDataPoints || true);
+  var tooltipsOnDataPoints = (options.tooltipsOnDataPoints || true);
+  var labelDataPoints = (options.labelDataPoints || !tooltipsOnDataPoints);
 
   //later this can be allowed to be off, and the function will be able to build scatter plots. But for now, we're only supporting dates.
   options.xAxisIsDates = true;
@@ -125,6 +126,26 @@ function d3LineChart(targetSelector, data, yAxisLabel, options) {
       .datum(data)
       .attr("class", "line")
       .attr("d", line);
+
+  if(tooltipsOnDataPoints) {
+    /* Initialize tooltip */
+    var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { 
+      return (options.xAxisIsDates ? d.date : d.x) +": "+ d.count; 
+    });
+
+    /* Invoke the tip in the context of your visualization */
+    vis.call(tip);
+
+    vis.selectAll('rect')
+      .data(data)
+      .enter().append('rect')
+      .attr('width', function() { return x.rangeBand() })
+      .attr('height', function(d) { return height - y(d.count) })
+      .attr('y', function(d) { return y(d.count) })
+      .attr('x', function(d, i) { return x(i) })
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
+  }
 
   if(labelDataPoints) {
     //show a dot at each datapoint

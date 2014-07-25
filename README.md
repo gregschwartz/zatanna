@@ -92,3 +92,8 @@ Shown as Option Name (default value).
  * height (320)
 
 Also note that you can add ANY option which d3Pie accepts, and it will be passed to the d3Pie call. (e.g.: `"size": { "pieInnerRadius": "90%"}`).
+
+## Coming soon: Bar Charts
+Soon!
+### Data format
+var votes_for_heroes = [{"x":"Superman", "count":9321}, {"x":"Captain America", "count":1942}, {"x":"Luke Skywalker", "count":1138}, {"x":"Master Chief", "count":343];
