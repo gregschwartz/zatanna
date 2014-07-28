@@ -44,11 +44,12 @@ d3LineChart expects an array of hashes, with index "date" for the X axis, and "c
 xis.
 ```
 var typed = [
-  {"date":"2014-01-01","count":443},
-  {"date":"2014-02-01","count":23},
-  {"date":"2014-03-01","count":133},
-  {"date":"2014-04-01","count":223},
-  {"date":"2014-05-01","count":13}
+  {"date":"2014-01-01","count":43},
+  {"date":"2014-01-02","count":23},
+  {"date":"2014-01-03","count":133},
+  {"date":"2014-01-04","count":223},
+  {"date":"2014-01-05","count":13},
+  {"date":"2014-01-09","count":235}
 ];
 ```
 
