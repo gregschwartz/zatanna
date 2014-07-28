@@ -27,8 +27,12 @@ Build a line chart using D3. (Based upon Michael Bostock's [line chart example](
 
 Example:
 ```
+var typed = [{"date":"2014-01-01","count":43},{"date":"2014-01-02","count":23},{"date":"2014-01-03","count":133},{"date":"2014-01-04","count":223},{"date":"2014-01-05","count":13},{"date":"2014-01-09","count":235}];
 d3LineChart("#chart", typed, "Keys Typed", {xAxisIsDates: true, yTicks: 7});
 ```
+
+Produces:
+![Line chart example](http://i.imgur.com/DV32CNk.png)
 
 ### Parameters
 ```
@@ -68,10 +72,16 @@ Shown as Option Name (default value).
 ## Pie Chart
 [d3Pie](http://d3pie.org) already makes it pretty easy to build a pie chart, and this function simplifies things a bit further.
 
+Example:
 ```
 var ages = {'18-29': 173, '30-49': 231, '50-64': 81, '65+': 1};
 d3PieChart("#ages", ages, {title: "Age", width: 480, height: 300});
 ```
+
+Produces:
+
+<img src="http://i.imgur.com/jzOPcCm.png" alt="Pie chart example" height=300 />
+
 
 ### Parameters
 ```
