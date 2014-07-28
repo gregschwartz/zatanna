@@ -23,3 +23,27 @@
 .lineChart .rule line {
   stroke: #eee;
 }
+
+
+.barChart .bar {
+    fill: steelblue;
+}
+
+.barChart .bar:hover {
+    fill: brown;
+}
+
+.barChart .axis {
+    font: 10px sans-serif;
+}
+
+.barChart .axis path,
+.barChart .axis line {
+    fill: none;
+      stroke: #000;
+        shape-rendering: crispEdges;
+}
+
+.barChart .x.axis path {
+    display: none;
+}

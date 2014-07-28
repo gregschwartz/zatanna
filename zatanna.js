@@ -307,6 +307,7 @@ function d3BarChart(targetSelector, data, options) {
       .ticks(yTicks, "%");
 
   var svg = d3.select(targetSelector).append("svg")
+      .attr("class", "barChart")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
     .append("g")
