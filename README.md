@@ -102,3 +102,40 @@ Shown as Option Name (default value).
  * height (320)
 
 Also note that you can add ANY option which d3Pie accepts, and it will be passed to the d3Pie call. (e.g.: `"size": { "pieInnerRadius": "90%"}`).
+
+
+
+## Bar Charts
+Build a bar chart using D3. (Based upon Michael Bostock's [bar chart example](http://bl.ocks.org/mbostock/3883245).) 
+
+### Example
+```
+var votes_for_heroes = [{"x":"Superman", "count":9321}, {"x":"Captain America", "count":1942}, {"x":"Luke Skywalker", "count":1138}, {"x":"Master Chief", "count":343}];
+var votes = [{"Superman":9321}, {"Captain America":1942}, {"Luke Skywalker":1138}, {"Master Chief":343}];
+d3BarChart("#heroes", votes_for_heroes , {title: "Votes", width: 480, height: 300});
+```
+
+Produces:
+![LINE chart example](http://i.imgur.com/DV32CNk.png)
+
+### Parameters
+```
+function d3BarChart(targetSelector, data, options)
+```
+ * targetSelector: String. The selector (#id or .class or combination) to put the SVG element in.
+ * data: Array. The data array, see below for expected format.
+ * options: hash. Optional hash of options. See below for accepted options.
+
+### Data format
+d3LineChart expects an array of hashes, with index "date" for the X axis, and "count" for the Y-axis.
+```
+var votes_for_heroes = [{"x":"Superman", "count":9321}, {"x":"Captain America", "count":1942}, {"x":"Luke Skywalker", "count":1138}, {"x":"Master Chief", "count":343}];
+var votes = [{"Superman":9321}, {"Captain America":1942}, {"Luke Skywalker":1138}, {"Master Chief":343}];
+```
+
+### Options 
+Shown as Option Name (default value).
+ * margin_top (20), margin_right (20), margin_bottom (30), margin_left (40)
+ * width (950)
+ * height (400)
+ * yTicks (10) Number of ticks to *try* to fit data to. Value is passed to d3's axis.ticks(); [documentation](https://github.com/mbostock/d3/wiki/SVG-Axes#wiki-ticks).
