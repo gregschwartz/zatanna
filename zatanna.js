@@ -316,11 +316,11 @@ function d3BarChart(targetSelector, data, options) {
     };
 
     //merge the symbol defaults with optional passed values
-    if(data[i].leftSymbol && data[i].leftSymbol.value) {
+    if(data[i].leftSymbol && data[i].leftSymbol.value > 0) {
       item["leftSymbol"] = { "value": +data[i].leftSymbol.value };
       jQuery.extend(item["leftSymbol"], leftSymbol, options.leftSymbol);
     }
-    if(data[i].rightSymbol && data[i].rightSymbol.value) {
+    if(data[i].rightSymbol && data[i].rightSymbol.value > 0) {
       item["rightSymbol"] = { "value": +data[i].rightSymbol.value };
       jQuery.extend(item["rightSymbol"], rightSymbol, options.rightSymbol);
     }
@@ -437,7 +437,7 @@ function d3BarChart(targetSelector, data, options) {
     .data(convertedData)
     .enter().append("text")
       .attr("class", "symbolLabel")
-      .attr("transform", function(d) {if(d.rightSymbol) return "translate(" + (x(d.label)+x.rangeBand()-d.rightSymbol.width) + "," + (y(d.rightSymbol.value)+d.rightSymbol.width) + ") rotate(-90)"; })
+      .attr("transform", function(d) {if(d.rightSymbol) return "translate(" + (x(d.label)+x.rangeBand()-d.rightSymbol.width+1) + "," + (y(d.rightSymbol.value)+d.rightSymbol.width) + ") rotate(-90)"; })
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text(function(d) { if(d.rightSymbol) return d.rightSymbol.label; });
