@@ -110,8 +110,7 @@ Build a bar chart using D3. (Based upon Michael Bostock's [bar chart example](ht
 
 ### Example
 ```
-var votes_for_heroes = [{"x":"Superman", "count":9321}, {"x":"Captain America", "count":1942}, {"x":"Luke Skywalker", "count":1138}, {"x":"Master Chief", "count":343}];
-var votes = [{"Superman":9321}, {"Captain America":1942}, {"Luke Skywalker":1138}, {"Master Chief":343}];
+var votes = {"Superman":9321, "Captain America":1942, "Luke Skywalker":1138, "Master Chief":343};
 d3BarChart("#heroes", votes_for_heroes , {title: "Votes", width: 480, height: 300});
 ```
 
@@ -127,11 +126,66 @@ function d3BarChart(targetSelector, data, options)
  * options: hash. Optional hash of options. See below for accepted options.
 
 ### Data format
-d3LineChart expects an array of hashes, with index "date" for the X axis, and "count" for the Y-axis.
+d3BarChart expects at minimum a hash, with each key being the label, and the value being the number to create a bar for.
 ```
-var votes_for_heroes = [{"x":"Superman", "count":9321}, {"x":"Captain America", "count":1942}, {"x":"Luke Skywalker", "count":1138}, {"x":"Master Chief", "count":343}];
-var votes = [{"Superman":9321}, {"Captain America":1942}, {"Luke Skywalker":1138}, {"Master Chief":343}];
+var votes = {"Superman":9321, "Captain America":1942, "Luke Skywalker":1138, "Master Chief":343};
 ```
+
+You can also overide the default bar color by turning the value into a hash, and providing the color and bar value in the inner hash:
+```
+var votes = [
+  {
+    "Superman": {
+      "value": 9321, 
+      "color": "red"
+    }
+  }, 
+  //...
+];
+```
+
+### Symbols for context
+Support is also provided to show a left and/or right symbol, next to each bar. This allows you to provide context. (e.g.: Value last year, Recommendation, Typical, Average, etc)
+```
+var votes = {
+  "Superman": {
+    "value": 9321, 
+    "leftSymbol": { 
+      "value": 8324,
+      "label": "Last year",
+      "shape": "triangle"
+    }
+  },
+  "Captain America": {
+    "value": 1942,
+    "leftSymbol": { 
+      "value": 1948,
+      "label": "Last year",
+      "shape": "triangle"
+    }
+  },
+  //...
+};
+```
+
+And you can simplify that: instead of specifying the label and shape repeatedly, they can be provided in the `options` hash:
+```
+var votes = {
+  "Superman": {
+    "value": 9321, 
+    "leftSymbol": { "value": 8324 }
+  }, 
+  "Captain America": {
+    "value": 1942,
+    "leftSymbol": { "value": 1948 }
+  },
+  //...
+};
+d3BarChart("#heroes", votes_for_heroes , {title: "Votes", width: 480, height: 300, "leftSymbol": { "label": "Last year", "shape": "triangle"} });
+```
+
+
+
 
 ### Options 
 Shown as Option Name (default value).
@@ -139,3 +193,15 @@ Shown as Option Name (default value).
  * width (950)
  * height (400)
  * yTicks (10) Number of ticks to *try* to fit data to. Value is passed to d3's axis.ticks(); [documentation](https://github.com/mbostock/d3/wiki/SVG-Axes#wiki-ticks).
+ * yAxisTitle ("") Title to display on the y-axis.
+ * defaultBarColor  ("steelblue") The default color for the bars.
+ * leftSymbol Default options for the left symbols. Individual settings will override the defaults. Symbols are only shown if values are provided.
+   * shape (triangle) Supported shapes are "triangle", "circle", "square", and "cross".
+   * color (gray) Can be a named color or a hexcode.
+   * width (8) Icons are essentially square, so width will also be height.
+   * showLine (true) If true, draws a dashed line across the bar, at the height of the symbol. Helps make it easier to compare bar and symbol values.
+ * rightSymbol Default options for the right symbols. Individual settings will override the defaults. Symbols are only shown if values are provided.
+   * shape (circle) Supported shapes are "triangle", "circle", "square", and "cross".
+   * color (gray) Can be a named color or a hexcode.
+   * width (8) Icons are essentially square, so width will also be height.
+   * showLine (true) If true, draws a dashed line across the bar, at the height of the symbol. Helps make it easier to compare bar and symbol values.

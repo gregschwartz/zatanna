@@ -47,3 +47,8 @@
 .barChart .x.axis path {
     display: none;
 }
+
+.barChart .symbolLabel {
+  font-size: 9px;
+  opacity: 0.6;
+}

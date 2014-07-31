@@ -281,15 +281,52 @@ function d3PieChart(targetSelector, data, options) {
  * @param {array} data The data array. See notes for accepted forms to the data.
  * @param {hash} options Hash of options. See notes for accepted options.
  * Based upon Michael Bostock's bar chart code, http://bl.ocks.org/mbostock/3885304
- * Example: d3BarChart("#votes", votes, {title: "Votes", width: 480, height: 300});
  */
 function d3BarChart(targetSelector, data, options) {
   options = options || {};
-  yAxisLabel = yAxisLabel || "";
   var margin = {top: options.margin_top || 20, right: options.margin_right || 20, bottom: options.margin_bottom || 30, left: options.margin_left || 40};
   var width = (options.width || 950) - margin.left - margin.right;
   var height = (options.height || 400) - margin.top - margin.bottom;
   var yTicks = options.yTicks || 10;
+  var defaultBarColor = options.defaultBarColor || "steelblue";
+
+  //optional symbols
+  var leftSymbol = {
+    "shape": "triangle",
+    "color": "gray",
+    "showLine": true,
+    "lineColor": "black",
+    "width": 8
+  };
+  var rightSymbol = {
+    "shape": "circle",
+    "color": "gray",
+    "showLine": true,
+    "lineColor": "black",
+    "width": leftSymbol.width //by default, same size
+  };
+
+  //convert the data to force it into the right format
+  var convertedData = [];
+  for(var i in data) {
+    var item = {
+      "label": i,
+      "value": +data[i].value || +data[i],
+      "color": data[i].color || defaultBarColor
+    };
+
+    //merge the symbol defaults with optional passed values
+    if(data[i].leftSymbol && data[i].leftSymbol.value) {
+      item["leftSymbol"] = { "value": +data[i].leftSymbol.value };
+      jQuery.extend(item["leftSymbol"], leftSymbol, options.leftSymbol);
+    }
+    if(data[i].rightSymbol && data[i].rightSymbol.value) {
+      item["rightSymbol"] = { "value": +data[i].rightSymbol.value };
+      jQuery.extend(item["rightSymbol"], rightSymbol, options.rightSymbol);
+    }
+
+    convertedData.push(item);
+  }
 
   var x = d3.scale.ordinal()
       .rangeRoundBands([0, width], .1);
@@ -304,7 +341,7 @@ function d3BarChart(targetSelector, data, options) {
   var yAxis = d3.svg.axis()
       .scale(y)
       .orient("left")
-      .ticks(yTicks, "%");
+      .ticks(yTicks, yTicks);
 
   var svg = d3.select(targetSelector).append("svg")
       .attr("class", "barChart")
@@ -313,8 +350,14 @@ function d3BarChart(targetSelector, data, options) {
     .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  x.domain(data.map(function(d) { return d.letter; }));
-  y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
+  x.domain(convertedData.map(function(d) { return d.label; }));
+  y.domain([0, d3.max(convertedData, function(d) { 
+    //find the max of the value, and both symbol's values, if set
+    var values = [d.value];
+    if(d.leftSymbol) values.push(d.leftSymbol.value);
+    if(d.rightSymbol) values.push(d.rightSymbol.value);
+    return d3.max(values); 
+  })]);
 
   svg.append("g")
       .attr("class", "x axis")
@@ -329,14 +372,85 @@ function d3BarChart(targetSelector, data, options) {
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Frequency");
+      .text(options.yAxisTitle || "");
 
+  //bars
   svg.selectAll(".bar")
-      .data(data)
+      .data(convertedData)
     .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", function(d) { return x(d.letter); })
-      .attr("width", x.rangeBand())
-      .attr("y", function(d) { return y(d.frequency); })
-      .attr("height", function(d) { return height - y(d.frequency); });
+      .attr("x", function(d) { return x(d.label) + (d.leftSymbol ? d.leftSymbol.width -1 : 0); })
+      .attr("width", function(d) { return x.rangeBand() - (d.leftSymbol ? d.leftSymbol.width : 0) - (d.rightSymbol ? d.rightSymbol.width : 0); })
+      .attr("y", function(d) { return y(d.value); })
+      .attr("height", function(d) { return height - y(d.value); })
+      .style("fill", function(d) { return d.color; });
+
+  //left symbols
+  svg.selectAll(".symbol")
+    .data(convertedData)
+    .enter().append("path")
+    .attr("transform", function(d) {if(d.leftSymbol) return "translate(" + x(d.label) + "," + y(d.leftSymbol.value) + ")" + (d.leftSymbol.shape=="triangle" ? "rotate(90)" : ""); })
+    .attr("d", d3.svg.symbol()
+      .size(function(d) { if(d.leftSymbol) return Math.pow(d.leftSymbol.width,2); })
+      .type(function(d) { if(d.leftSymbol) { if(d.leftSymbol.shape=="triangle") return "triangle-up"; else return d.leftSymbol.shape; } })
+    )
+    .style("fill", function(d) { if(d.leftSymbol) return d.leftSymbol.color; });
+
+  //left symbol labels
+  svg.selectAll(".leftLabel")
+    .data(convertedData)
+    .enter().append("text")
+      .attr("class", "symbolLabel")
+      .attr("transform", function(d) {if(d.leftSymbol) return "translate(" + (x(d.label)-d.leftSymbol.width/2) + "," + (y(d.leftSymbol.value)+d.leftSymbol.width) + ") rotate(-90)"; })
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text(function(d) { if(d.leftSymbol) return d.leftSymbol.label; });
+
+  //left symbol lines
+  svg.selectAll(".leftLines")
+    .data(convertedData)
+    .enter().append("line")
+      .style("stroke-dasharray", ("3, 3"))
+      .attr("stroke-width", function(d) { return (d.leftSymbol && d.leftSymbol.showLine ? 1 : 0); }) //if !showLine, line isn't visible
+      .attr("stroke", function(d) { if(d.leftSymbol) return d.leftSymbol.lineColor; })
+      .attr("x1", function(d) { if(d.leftSymbol) return x(d.label) + d.leftSymbol.width - 2; })
+      .attr("y1", function(d) { if(d.leftSymbol) return y(d.leftSymbol.value); })
+      .attr("x2", function(d) { if(d.leftSymbol) return x(d.label) + d.leftSymbol.width + x.rangeBand() - (d.rightSymbol ? d.rightSymbol.width : 0) - 2; })
+      .attr("y2", function(d) { if(d.leftSymbol) return y(d.leftSymbol.value); });
+
+  //right symbols
+  svg.selectAll(".symbol")
+    .data(convertedData)
+    .enter().append("path")
+    .attr("transform", function(d) {
+      if(d.rightSymbol) 
+        return "translate(" + (x(d.label)+x.rangeBand()-d.rightSymbol.width+4) + "," + y(d.rightSymbol.value) + ")" + (d.rightSymbol.shape=="triangle" ? "rotate(-90)" : "");
+    })
+    .attr("d", d3.svg.symbol()
+      .size(function(d) { if(d.rightSymbol) return Math.pow(d.rightSymbol.width,2); })
+      .type(function(d) { if(d.rightSymbol) { if(d.rightSymbol.shape=="triangle") return "triangle-up"; else return d.rightSymbol.shape; } })
+    )
+    .style("fill", function(d) { if(d.rightSymbol) return d.rightSymbol.color; });
+
+  //right symbol labels
+  svg.selectAll(".rightLabel")
+    .data(convertedData)
+    .enter().append("text")
+      .attr("class", "symbolLabel")
+      .attr("transform", function(d) {if(d.rightSymbol) return "translate(" + (x(d.label)+x.rangeBand()-d.rightSymbol.width) + "," + (y(d.rightSymbol.value)+d.rightSymbol.width) + ") rotate(-90)"; })
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text(function(d) { if(d.rightSymbol) return d.rightSymbol.label; });
+
+  //right symbol lines
+  svg.selectAll(".rightLines")
+    .data(convertedData)
+    .enter().append("line")
+      .style("stroke-dasharray", ("3, 3"))
+      .attr("stroke-width", function(d) { return (d.rightSymbol && d.rightSymbol.showLine ? 1 : 0); }) //if !showLine, line isn't visible
+      .attr("stroke", function(d) { if(d.rightSymbol) return d.rightSymbol.lineColor; })
+      .attr("x1", function(d) { if(d.rightSymbol) return x(d.label) + (d.leftSymbol ? d.leftSymbol.width + 1 : 0); })
+      .attr("y1", function(d) { if(d.rightSymbol) return y(d.rightSymbol.value); })
+      .attr("x2", function(d) { if(d.rightSymbol) return x(d.label) + (d.leftSymbol ? d.leftSymbol.width : 0) + x.rangeBand() - (d.rightSymbol ? d.rightSymbol.width : 0); })
+      .attr("y2", function(d) { if(d.rightSymbol) return y(d.rightSymbol.value); });
 }
