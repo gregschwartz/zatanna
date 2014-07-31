@@ -111,7 +111,7 @@ Build a bar chart using D3. (Based upon Michael Bostock's [bar chart example](ht
 ### Example
 ```
 var votes = {"Superman":9321, "Captain America":1942, "Luke Skywalker":1138, "Master Chief":343};
-d3BarChart("#heroes", votes_for_heroes , {title: "Votes", width: 480, height: 300});
+d3BarChart("#heroes", votes, {title: "Votes", width: 480, height: 300});
 ```
 
 Produces:
@@ -181,7 +181,9 @@ var votes = {
   },
   //...
 };
-d3BarChart("#heroes", votes_for_heroes , {title: "Votes", width: 480, height: 300, "leftSymbol": { "label": "Last year", "shape": "triangle"} });
+d3BarChart("#heroes", votes, 
+  {title: "Votes", width: 480, height: 300, "leftSymbol": { "label": "Last year", "shape": "triangle"} }
+);
 ```
 
 
@@ -195,12 +197,12 @@ Shown as Option Name (default value).
  * yTicks (10) Number of ticks to *try* to fit data to. Value is passed to d3's axis.ticks(); [documentation](https://github.com/mbostock/d3/wiki/SVG-Axes#wiki-ticks).
  * yAxisTitle ("") Title to display on the y-axis.
  * defaultBarColor  ("steelblue") The default color for the bars.
- * leftSymbol Default options for the left symbols. Individual settings will override the defaults. Symbols are only shown if values are provided.
+ * leftSymbol: Default options for the left symbols. Settings on individual datapoints will override the defaults. *Symbols are only shown if values are provided.*
    * shape (triangle) Supported shapes are "triangle", "circle", "square", and "cross".
    * color (gray) Can be a named color or a hexcode.
    * width (8) Icons are essentially square, so width will also be height.
    * showLine (true) If true, draws a dashed line across the bar, at the height of the symbol. Helps make it easier to compare bar and symbol values.
- * rightSymbol Default options for the right symbols. Individual settings will override the defaults. Symbols are only shown if values are provided.
+ * rightSymbol: Default options for the right symbols. Settings on individual datapoints will override the defaults. *Symbols are only shown if values are provided.*
    * shape (circle) Supported shapes are "triangle", "circle", "square", and "cross".
    * color (gray) Can be a named color or a hexcode.
    * width (8) Icons are essentially square, so width will also be height.
