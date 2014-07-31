@@ -103,3 +103,115 @@ Shown as Option Name (default value).
  * height (320)
 
 Also note that you can add ANY option which d3Pie accepts, and it will be passed to the d3Pie call. (e.g.: `"size": { "pieInnerRadius": "90%"}`).
+
+
+
+## Bar Charts
+Build a bar chart using D3. (Based upon Michael Bostock's [bar chart example](http://bl.ocks.org/mbostock/3883245).) 
+
+### Example
+```
+var votes = {"Superman":9321, "Captain America":1942, "Luke Skywalker":1138, "Master Chief":343};
+d3BarChart("#heroes", votes, {title: "Votes", width: 480, height: 300});
+```
+
+Produces:
+![LINE chart example](http://i.imgur.com/DV32CNk.png)
+
+### Parameters
+```
+function d3BarChart(targetSelector, data, options)
+```
+ * targetSelector: String. The selector (#id or .class or combination) to put the SVG element in.
+ * data: Array. The data array, see below for expected format.
+ * options: hash. Optional hash of options. See below for accepted options.
+
+### Data format
+d3BarChart expects at minimum a hash, with each key being the label, and the value being the number to create a bar for.
+```
+var votes = {"Superman":9321, "Captain America":1942, "Luke Skywalker":1138, "Master Chief":343};
+```
+
+You can also overide the default bar color by turning the value into a hash, and providing the color and bar value in the inner hash:
+```
+var votes = [
+  {
+    "Superman": {
+      "value": 9321, 
+      "color": "red"
+    }
+  }, 
+  //...
+];
+```
+
+### Symbols for context
+Support is also provided to show a left and/or right symbol, next to each bar. This allows you to provide context. (e.g.: Value last year, Recommendation, Typical, Average, etc)
+```
+var votes = {
+  "Superman": {
+    "value": 9321, 
+    "leftSymbol": { 
+      "value": 8324,
+      "label": "Last year",
+      "shape": "triangle"
+    }
+  },
+  "Captain America": {
+    "value": 1942,
+    "leftSymbol": { 
+      "value": 1948,
+      "label": "Last year",
+      "shape": "triangle"
+    }
+  },
+  //...
+};
+```
+
+And you can simplify that: instead of specifying the label and shape repeatedly, they can be provided in the `options` hash:
+```
+var votes = {
+  "Superman": {
+    "value": 9321, 
+    "leftSymbol": { "value": 8324 }
+  }, 
+  "Captain America": {
+    "value": 1942,
+    "leftSymbol": { "value": 1948 }
+  },
+  //...
+};
+d3BarChart(
+  "#heroes", 
+  votes, 
+  {
+    title: "Votes", 
+    width: 480, 
+    height: 300, 
+    "leftSymbol": {"label": "Last year", "shape": "triangle"} 
+  }
+);
+```
+
+
+
+
+### Options 
+Shown as Option Name (default value).
+ * margin_top (20), margin_right (20), margin_bottom (30), margin_left (40)
+ * width (950)
+ * height (400)
+ * yTicks (10) Number of ticks to *try* to fit data to. Value is passed to d3's axis.ticks(); [documentation](https://github.com/mbostock/d3/wiki/SVG-Axes#wiki-ticks).
+ * yAxisTitle ("") Title to display on the y-axis.
+ * defaultBarColor  ("steelblue") The default color for the bars.
+ * leftSymbol: Default options for the left symbols. Settings on individual datapoints will override the defaults. **Symbols are only shown if values are provided.**
+   * shape (triangle) Supported shapes are "triangle", "circle", "square", and "cross".
+   * color (gray) Can be a named color or a hexcode.
+   * width (8) Icons are essentially square, so width will also be height.
+   * showLine (true) If true, draws a dashed line across the bar, at the height of the symbol. Helps make it easier to compare bar and symbol values.
+ * rightSymbol: Default options for the right symbols. Settings on individual datapoints will override the defaults. **Symbols are only shown if values are provided.**
+   * shape (circle) Supported shapes are "triangle", "circle", "square", and "cross".
+   * color (gray) Can be a named color or a hexcode.
+   * width (8) Icons are essentially square, so width will also be height.
+   * showLine (true) If true, draws a dashed line across the bar, at the height of the symbol. Helps make it easier to compare bar and symbol values.
