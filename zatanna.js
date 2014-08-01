@@ -401,10 +401,22 @@ function d3BarChart(targetSelector, data, options) {
     .data(convertedData)
     .enter().append("text")
       .attr("class", "symbolLabel")
-      .attr("transform", function(d) {if(d.leftSymbol) return "translate(" + (x(d.label)-d.leftSymbol.width/2) + "," + (y(d.leftSymbol.value)+d.leftSymbol.width) + ") rotate(-90)"; })
       .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text(function(d) { if(d.leftSymbol) return d.leftSymbol.label; });
+      .text(function(d) { if(d.leftSymbol) return d.leftSymbol.label; })
+      .attr("transform", function(d) { 
+        if(d.leftSymbol) {
+          var my_x = x(d.label)-d.leftSymbol.width/2,
+              my_y = y(d.leftSymbol.value)+d.leftSymbol.width;
+          if(my_y + this.offsetWidth + 10 >= height) { my_y -= d.leftSymbol.width * 2; }
+          return "translate(" + my_x + "," + my_y + ") rotate(-90)";
+        }
+      })
+      .style("text-anchor", function(d) { 
+        if(d.leftSymbol) {
+          var my_y = y(d.leftSymbol.value)+d.leftSymbol.width;
+          return (my_y + this.offsetWidth + 10 >= height ? "start" : "end");
+        }
+      });
 
   //left symbol lines
   svg.selectAll(".leftLines")
@@ -417,6 +429,7 @@ function d3BarChart(targetSelector, data, options) {
       .attr("y1", function(d) { if(d.leftSymbol) return y(d.leftSymbol.value); })
       .attr("x2", function(d) { if(d.leftSymbol) return x(d.label) + d.leftSymbol.width + x.rangeBand() - (d.rightSymbol ? d.rightSymbol.width : 0) - 2; })
       .attr("y2", function(d) { if(d.leftSymbol) return y(d.leftSymbol.value); });
+
 
   //right symbols
   svg.selectAll(".symbol")
@@ -437,10 +450,22 @@ function d3BarChart(targetSelector, data, options) {
     .data(convertedData)
     .enter().append("text")
       .attr("class", "symbolLabel")
-      .attr("transform", function(d) {if(d.rightSymbol) return "translate(" + (x(d.label)+x.rangeBand()-d.rightSymbol.width+1) + "," + (y(d.rightSymbol.value)+d.rightSymbol.width) + ") rotate(-90)"; })
       .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text(function(d) { if(d.rightSymbol) return d.rightSymbol.label; });
+      .text(function(d) { if(d.rightSymbol) return d.rightSymbol.label; })
+      .attr("transform", function(d) { 
+        if(d.rightSymbol) {
+          var my_x = x(d.label)+x.rangeBand()-d.rightSymbol.width+1,
+              my_y = y(d.rightSymbol.value)+d.rightSymbol.width;
+          if(my_y + this.offsetWidth + 10 >= height) { my_y -= d.rightSymbol.width * 2; }
+          return "translate(" + my_x + "," + my_y + ") rotate(-90)";
+        }
+      })
+      .style("text-anchor", function(d) { 
+        if(d.rightSymbol) {
+          var my_y = y(d.rightSymbol.value)+d.rightSymbol.width;
+          return (my_y + this.offsetWidth + 10 >= height ? "start" : "end");
+        }
+      });
 
   //right symbol lines
   svg.selectAll(".rightLines")
