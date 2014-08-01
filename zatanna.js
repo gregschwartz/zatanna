@@ -197,7 +197,7 @@ function d3PieChart(targetSelector, data, options) {
       "canvasHeight": options.height || 320,
       "canvasWidth": options.width || 320,
       "pieInnerRadius": "70%",
-      "pieOuterRadius": "100%"
+      "pieOuterRadius": "85%"
     },
     "data": {
       "sortOrder": "value-desc",
@@ -205,7 +205,7 @@ function d3PieChart(targetSelector, data, options) {
     },
     "labels": {
       "outer": {
-        "pieDistance": 32
+        "pieDistance": 16
       },
       "inner": {
         "hideWhenLessThanPercentage": 3
