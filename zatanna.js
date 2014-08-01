@@ -289,6 +289,7 @@ function d3BarChart(targetSelector, data, options) {
   var height = (options.height || 400) - margin.top - margin.bottom;
   var yTicks = options.yTicks || 10;
   var defaultBarColor = options.defaultBarColor || "steelblue";
+  var hasLeftSymbol = hasRightSymbol = false;
 
   //optional symbols
   var leftSymbol = {
@@ -296,6 +297,7 @@ function d3BarChart(targetSelector, data, options) {
     "color": "gray",
     "showLine": true,
     "lineColor": "black",
+    "lineDashing": "8, 2",
     "width": 8
   };
   var rightSymbol = {
@@ -303,6 +305,7 @@ function d3BarChart(targetSelector, data, options) {
     "color": "gray",
     "showLine": true,
     "lineColor": "black",
+    "lineDashing": "4, 2",
     "width": leftSymbol.width //by default, same size
   };
 
@@ -319,10 +322,12 @@ function d3BarChart(targetSelector, data, options) {
     if(data[i].leftSymbol && data[i].leftSymbol.value > 0) {
       item["leftSymbol"] = { "value": +data[i].leftSymbol.value };
       jQuery.extend(item["leftSymbol"], leftSymbol, options.leftSymbol);
+      hasLeftSymbol = true;
     }
     if(data[i].rightSymbol && data[i].rightSymbol.value > 0) {
       item["rightSymbol"] = { "value": +data[i].rightSymbol.value };
       jQuery.extend(item["rightSymbol"], rightSymbol, options.rightSymbol);
+      hasRightSymbol = true;
     }
 
     convertedData.push(item);
@@ -379,103 +384,106 @@ function d3BarChart(targetSelector, data, options) {
       .data(convertedData)
     .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", function(d) { return x(d.label) + (d.leftSymbol ? d.leftSymbol.width -1 : 0); })
+      .attr("x", function(d) { return x(d.label) + (d.leftSymbol ? d.leftSymbol.width -2 : 0); })
       .attr("width", function(d) { return x.rangeBand() - (d.leftSymbol ? d.leftSymbol.width : 0) - (d.rightSymbol ? d.rightSymbol.width : 0); })
       .attr("y", function(d) { return y(d.value); })
       .attr("height", function(d) { return height - y(d.value); })
       .style("fill", function(d) { return d.color; });
 
   //left symbols
-  svg.selectAll(".symbol")
-    .data(convertedData)
-    .enter().append("path")
-    .attr("transform", function(d) {if(d.leftSymbol) return "translate(" + x(d.label) + "," + y(d.leftSymbol.value) + ")" + (d.leftSymbol.shape=="triangle" ? "rotate(90)" : ""); })
-    .attr("d", d3.svg.symbol()
-      .size(function(d) { if(d.leftSymbol) return Math.pow(d.leftSymbol.width,2); })
-      .type(function(d) { if(d.leftSymbol) { if(d.leftSymbol.shape=="triangle") return "triangle-up"; else return d.leftSymbol.shape; } })
-    )
-    .style("fill", function(d) { if(d.leftSymbol) return d.leftSymbol.color; });
+  if(hasLeftSymbol) {
+    svg.selectAll(".symbol")
+      .data(convertedData)
+      .enter().append("path")
+      .attr("transform", function(d) {if(d.leftSymbol) return "translate(" + x(d.label) + "," + y(d.leftSymbol.value) + ")" + (d.leftSymbol.shape=="triangle" ? "rotate(90)" : ""); })
+      .attr("d", d3.svg.symbol()
+        .size(function(d) { if(d.leftSymbol) return Math.pow(d.leftSymbol.width,2); })
+        .type(function(d) { if(d.leftSymbol) { if(d.leftSymbol.shape=="triangle") return "triangle-up"; else return d.leftSymbol.shape; } })
+      )
+      .style("fill", function(d) { if(d.leftSymbol) return d.leftSymbol.color; });
 
-  //left symbol labels
-  svg.selectAll(".leftLabel")
-    .data(convertedData)
-    .enter().append("text")
-      .attr("class", "symbolLabel")
-      .attr("dy", ".71em")
-      .text(function(d) { if(d.leftSymbol) return d.leftSymbol.label; })
-      .attr("transform", function(d) { 
-        if(d.leftSymbol) {
-          var my_x = x(d.label)-d.leftSymbol.width/2,
-              my_y = y(d.leftSymbol.value)+d.leftSymbol.width;
-          if(my_y + this.offsetWidth + 10 >= height) { my_y -= d.leftSymbol.width * 2; }
-          return "translate(" + my_x + "," + my_y + ") rotate(-90)";
-        }
+    //left symbol labels
+    svg.selectAll(".leftLabel")
+      .data(convertedData)
+      .enter().append("text")
+        .attr("class", "symbolLabel")
+        .attr("dy", ".71em")
+        .text(function(d) { if(d.leftSymbol) return d.leftSymbol.label; })
+        .attr("transform", function(d) { 
+          if(d.leftSymbol) {
+            var my_x = x(d.label)-d.leftSymbol.width/2,
+                my_y = y(d.leftSymbol.value)+d.leftSymbol.width;
+            if(my_y + this.offsetWidth + 10 >= height) { my_y -= d.leftSymbol.width * 2; }
+            return "translate(" + my_x + "," + my_y + ") rotate(-90)";
+          }
+        })
+        .style("text-anchor", function(d) { 
+          if(d.leftSymbol) {
+            var my_y = y(d.leftSymbol.value)+d.leftSymbol.width;
+            return (my_y + this.offsetWidth + 10 >= height ? "start" : "end");
+          }
+        });
+
+    //left symbol lines
+    svg.selectAll(".leftLines")
+      .data(convertedData)
+      .enter().append("line")
+        .style("stroke-dasharray", function(d) { return d.leftSymbol.lineDashing; })
+        .attr("stroke-width", function(d) { return (d.leftSymbol && d.leftSymbol.showLine ? 1 : 0); }) //if !showLine, line isn't visible
+        .attr("stroke", function(d) { if(d.leftSymbol) return d.leftSymbol.lineColor; })
+        .attr("x1", function(d) { if(d.leftSymbol) return x(d.label) + d.leftSymbol.width - 3; })
+        .attr("y1", function(d) { if(d.leftSymbol) return y(d.leftSymbol.value); })
+        .attr("x2", function(d) { if(d.leftSymbol) return x(d.label) - 2 + x.rangeBand() - (d.rightSymbol ? d.rightSymbol.width : 0) ; })
+        .attr("y2", function(d) { if(d.leftSymbol) return y(d.leftSymbol.value); });
+  }
+
+  if(hasRightSymbol) {
+    //right symbols
+    svg.selectAll(".symbol")
+      .data(convertedData)
+      .enter().append("path")
+      .attr("transform", function(d) {
+        if(d.rightSymbol) 
+          return "translate(" + (x(d.label)+x.rangeBand()-d.rightSymbol.width+4) + "," + y(d.rightSymbol.value) + ")" + (d.rightSymbol.shape=="triangle" ? "rotate(-90)" : "");
       })
-      .style("text-anchor", function(d) { 
-        if(d.leftSymbol) {
-          var my_y = y(d.leftSymbol.value)+d.leftSymbol.width;
-          return (my_y + this.offsetWidth + 10 >= height ? "start" : "end");
-        }
-      });
+      .attr("d", d3.svg.symbol()
+        .size(function(d) { if(d.rightSymbol) return Math.pow(d.rightSymbol.width,2); })
+        .type(function(d) { if(d.rightSymbol) { if(d.rightSymbol.shape=="triangle") return "triangle-up"; else return d.rightSymbol.shape; } })
+      )
+      .style("fill", function(d) { if(d.rightSymbol) return d.rightSymbol.color; });
 
-  //left symbol lines
-  svg.selectAll(".leftLines")
-    .data(convertedData)
-    .enter().append("line")
-      .style("stroke-dasharray", ("3, 3"))
-      .attr("stroke-width", function(d) { return (d.leftSymbol && d.leftSymbol.showLine ? 1 : 0); }) //if !showLine, line isn't visible
-      .attr("stroke", function(d) { if(d.leftSymbol) return d.leftSymbol.lineColor; })
-      .attr("x1", function(d) { if(d.leftSymbol) return x(d.label) + d.leftSymbol.width - 2; })
-      .attr("y1", function(d) { if(d.leftSymbol) return y(d.leftSymbol.value); })
-      .attr("x2", function(d) { if(d.leftSymbol) return x(d.label) + d.leftSymbol.width + x.rangeBand() - (d.rightSymbol ? d.rightSymbol.width : 0) - 2; })
-      .attr("y2", function(d) { if(d.leftSymbol) return y(d.leftSymbol.value); });
+    //right symbol labels
+    svg.selectAll(".rightLabel")
+      .data(convertedData)
+      .enter().append("text")
+        .attr("class", "symbolLabel")
+        .attr("dy", ".71em")
+        .text(function(d) { if(d.rightSymbol) return d.rightSymbol.label; })
+        .attr("transform", function(d) { 
+          if(d.rightSymbol) {
+            var my_x = x(d.label)+x.rangeBand()-d.rightSymbol.width+1,
+                my_y = y(d.rightSymbol.value)+d.rightSymbol.width;
+            if(my_y + this.offsetWidth + 10 >= height) { my_y -= d.rightSymbol.width * 2; }
+            return "translate(" + my_x + "," + my_y + ") rotate(-90)";
+          }
+        })
+        .style("text-anchor", function(d) { 
+          if(d.rightSymbol) {
+            var my_y = y(d.rightSymbol.value)+d.rightSymbol.width;
+            return (my_y + this.offsetWidth + 10 >= height ? "start" : "end");
+          }
+        });
 
-
-  //right symbols
-  svg.selectAll(".symbol")
-    .data(convertedData)
-    .enter().append("path")
-    .attr("transform", function(d) {
-      if(d.rightSymbol) 
-        return "translate(" + (x(d.label)+x.rangeBand()-d.rightSymbol.width+4) + "," + y(d.rightSymbol.value) + ")" + (d.rightSymbol.shape=="triangle" ? "rotate(-90)" : "");
-    })
-    .attr("d", d3.svg.symbol()
-      .size(function(d) { if(d.rightSymbol) return Math.pow(d.rightSymbol.width,2); })
-      .type(function(d) { if(d.rightSymbol) { if(d.rightSymbol.shape=="triangle") return "triangle-up"; else return d.rightSymbol.shape; } })
-    )
-    .style("fill", function(d) { if(d.rightSymbol) return d.rightSymbol.color; });
-
-  //right symbol labels
-  svg.selectAll(".rightLabel")
-    .data(convertedData)
-    .enter().append("text")
-      .attr("class", "symbolLabel")
-      .attr("dy", ".71em")
-      .text(function(d) { if(d.rightSymbol) return d.rightSymbol.label; })
-      .attr("transform", function(d) { 
-        if(d.rightSymbol) {
-          var my_x = x(d.label)+x.rangeBand()-d.rightSymbol.width+1,
-              my_y = y(d.rightSymbol.value)+d.rightSymbol.width;
-          if(my_y + this.offsetWidth + 10 >= height) { my_y -= d.rightSymbol.width * 2; }
-          return "translate(" + my_x + "," + my_y + ") rotate(-90)";
-        }
-      })
-      .style("text-anchor", function(d) { 
-        if(d.rightSymbol) {
-          var my_y = y(d.rightSymbol.value)+d.rightSymbol.width;
-          return (my_y + this.offsetWidth + 10 >= height ? "start" : "end");
-        }
-      });
-
-  //right symbol lines
-  svg.selectAll(".rightLines")
-    .data(convertedData)
-    .enter().append("line")
-      .style("stroke-dasharray", ("3, 3"))
-      .attr("stroke-width", function(d) { return (d.rightSymbol && d.rightSymbol.showLine ? 1 : 0); }) //if !showLine, line isn't visible
-      .attr("stroke", function(d) { if(d.rightSymbol) return d.rightSymbol.lineColor; })
-      .attr("x1", function(d) { if(d.rightSymbol) return x(d.label) + (d.leftSymbol ? d.leftSymbol.width + 1 : 0); })
-      .attr("y1", function(d) { if(d.rightSymbol) return y(d.rightSymbol.value); })
-      .attr("x2", function(d) { if(d.rightSymbol) return x(d.label) + (d.leftSymbol ? d.leftSymbol.width : 0) + x.rangeBand() - (d.rightSymbol ? d.rightSymbol.width : 0); })
-      .attr("y2", function(d) { if(d.rightSymbol) return y(d.rightSymbol.value); });
+    //right symbol lines
+    svg.selectAll(".rightLines")
+      .data(convertedData)
+      .enter().append("line")
+        .style("stroke-dasharray", function(d) { return d.rightSymbol.lineDashing; })
+        .attr("stroke-width", function(d) { return (d.rightSymbol && d.rightSymbol.showLine ? 1 : 0); }) //if !showLine, line isn't visible
+        .attr("stroke", function(d) { if(d.rightSymbol) return d.rightSymbol.lineColor; })
+        .attr("x1", function(d) { if(d.rightSymbol) return x(d.label) + (d.leftSymbol ? d.leftSymbol.width + 1 : 0); })
+        .attr("y1", function(d) { if(d.rightSymbol) return y(d.rightSymbol.value); })
+        .attr("x2", function(d) { if(d.rightSymbol) return x(d.label) + x.rangeBand() - (d.rightSymbol ? d.rightSymbol.width : 0); })
+        .attr("y2", function(d) { if(d.rightSymbol) return y(d.rightSymbol.value); });
+  }
 }
