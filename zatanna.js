@@ -319,13 +319,13 @@ function d3BarChart(targetSelector, data, options) {
     };
 
     //merge the symbol defaults with optional passed values
-    if(data[i].leftSymbol && data[i].leftSymbol.value > 0) {
-      item["leftSymbol"] = { "value": +data[i].leftSymbol.value };
+    if(data[i].leftSymbol && (data[i].leftSymbol > 0 || data[i].leftSymbol.value > 0)) {
+      item["leftSymbol"] = { "value": +data[i].leftSymbol.value || +data[i].leftSymbol };
       jQuery.extend(item["leftSymbol"], leftSymbol, options.leftSymbol);
       hasLeftSymbol = true;
     }
-    if(data[i].rightSymbol && data[i].rightSymbol.value > 0) {
-      item["rightSymbol"] = { "value": +data[i].rightSymbol.value };
+    if(data[i].rightSymbol && (data[i].rightSymbol > 0 || data[i].rightSymbol.value > 0)) {
+      item["rightSymbol"] = { "value": +data[i].rightSymbol.value || +data[i].rightSymbol };
       jQuery.extend(item["rightSymbol"], rightSymbol, options.rightSymbol);
       hasRightSymbol = true;
     }
