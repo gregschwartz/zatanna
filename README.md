@@ -116,7 +116,7 @@ d3BarChart("#heroes", votes, {title: "Votes", width: 480, height: 300});
 ```
 
 Produces:
-![LINE chart example](http://i.imgur.com/DV32CNk.png)
+![Bar chart example](http://i.imgur.com/83YiDe5.png)
 
 ### Parameters
 ```
@@ -144,6 +144,7 @@ var votes = [
   //...
 ];
 ```
+![Bar chart with red bar](http://i.imgur.com/DAYCaPe.png)
 
 ### Symbols for context
 Support is also provided to show a left and/or right symbol, next to each bar. This allows you to provide context. (e.g.: Value last year, Recommendation, Typical, Average, etc)
@@ -168,8 +169,9 @@ var votes = {
   //...
 };
 ```
+![Bar chart with left symbols](http://i.imgur.com/3Ek9opc.png)
 
-And you can simplify that: instead of specifying the label and shape repeatedly, they can be provided in the `options` hash:
+That can also be simplified: instead of specifying the label and shape repeatedly, they can be provided in the `options` hash.
 ```
 var votes = {
   "Superman": {
@@ -194,6 +196,34 @@ d3BarChart(
 );
 ```
 
+Finally, both symbols also accept the value passed bare, like so: 
+```
+var votes = {
+  "Superman": {
+    "value": 9321, 
+    "leftSymbol": 8324,
+    "rightSymbol": 5000
+  }, 
+  "Captain America": {
+    "value": 1942,
+    "leftSymbol": 1948,
+    "rightSymbol": 1012
+  },
+  //...
+};
+d3BarChart(
+  "#heroes", 
+  votes, 
+  {
+    title: "Votes", 
+    width: 480, 
+    height: 300, 
+    "leftSymbol": {"label": "Last year", "shape": "triangle"},
+    "rightSymbol": {"label": "Two years ago"} 
+  }
+);
+```
+![Bar chart with both symbols](http://i.imgur.com/8JDRHkz.png)
 
 
 
@@ -210,8 +240,10 @@ Shown as Option Name (default value).
    * color (gray) Can be a named color or a hexcode.
    * width (8) Icons are essentially square, so width will also be height.
    * showLine (true) If true, draws a dashed line across the bar, at the height of the symbol. Helps make it easier to compare bar and symbol values.
+   * lineDashing ("8, 2") Pattern to draw dashed line. "8, 2" means 8 pixels of line, 2 pixels of space, repeated.
  * rightSymbol: Default options for the right symbols. Settings on individual datapoints will override the defaults. **Symbols are only shown if values are provided.**
    * shape (circle) Supported shapes are "triangle", "circle", "square", and "cross".
    * color (gray) Can be a named color or a hexcode.
    * width (8) Icons are essentially square, so width will also be height.
    * showLine (true) If true, draws a dashed line across the bar, at the height of the symbol. Helps make it easier to compare bar and symbol values.
+   * lineDashing ("4, 2") Pattern to draw dashed line. "4, 2" means 4 pixels of line, 2 pixels of space, repeated.
