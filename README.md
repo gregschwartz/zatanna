@@ -228,11 +228,11 @@ d3BarChart(
 
 
 ### Options 
-Shown as Option Name (default value).
+*Shown as Option Name (default value).*
  * margin_top (20), margin_right (20), margin_bottom (30), margin_left (40)
  * width (950)
  * height (400)
- * yTicks (10) Number of ticks to *try* to fit data to. Value is passed to d3's axis.ticks(); [documentation](https://github.com/mbostock/d3/wiki/SVG-Axes#wiki-ticks).
+ * yTicks (10) Number of ticks to *try* to fit data to. Value is passed to d3's [axis.ticks()](https://github.com/mbostock/d3/wiki/SVG-Axes#wiki-ticks).
  * yAxisTitle ("") Title to display on the y-axis.
  * defaultBarColor  ("steelblue") The default color for the bars.
  * leftSymbol: Default options for the left symbols. Settings on individual datapoints will override the defaults. **Symbols are only shown if values are provided.**
