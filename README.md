@@ -247,3 +247,12 @@ d3BarChart(
    * width (8) Icons are essentially square, so width will also be height.
    * showLine (true) If true, draws a dashed line across the bar, at the height of the symbol. Helps make it easier to compare bar and symbol values.
    * lineDashing ("4, 2") Pattern to draw dashed line. "4, 2" means 4 pixels of line, 2 pixels of space, repeated.
+
+
+# To Do
+* Support multiple series of data on line chart. 
+   * Needs to support specifying the colors for each series.
+   * Needs to have default colors for each series.
+* Check to make sure jQuery has loaded, and show errors if not.
+* Use [jQuery.getScript()](http://api.jquery.com/jquery.getscript/) to automatically load d3pie. Show error if it is not found.
+* Add [tooltips](http://bl.ocks.org/Caged/6476579) to bar chart and line chart, default to showing tool tips and not showing labels. (Automatically load the d3-tip library using [jQuery.getScript()](http://api.jquery.com/jquery.getscript/).)
