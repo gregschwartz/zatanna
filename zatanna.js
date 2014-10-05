@@ -32,9 +32,9 @@ function d3LineChart(targetSelector, data, yAxisLabel, options) {
   var width = (options.width || 950) - margin.left - margin.right;
   var height = (options.height || 400) - margin.top - margin.bottom;
   var yTicks = options.yTicks || 10;
-  var xGrid = (options.xGrid || true);
-  var yGrid = (options.yGrid || true);
-  var labelDataPoints = (options.labelDataPoints || true);
+  var xGrid = (options.xGrid !== null ? options.xGrid : true);
+  var yGrid = (options.yGrid !== null ? options.yGrid : true);
+  var labelDataPoints = (options.labelDataPoints !== null ? options.labelDataPoints : true);
 
   //later this can be allowed to be off, and the function will be able to build scatter plots. But for now, we're only supporting dates.
   options.xAxisIsDates = true;
